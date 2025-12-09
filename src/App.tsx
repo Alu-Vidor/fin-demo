@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { SimulationCanvas } from './components/SimulationCanvas'
-import { PlaceholderSimulation } from './models/PlaceholderSimulation'
+import { CAModel } from './models/CAModel'
 import { SocialForceModel } from './models/SocialForceModel'
 import type { SimulationModel } from './models/SimulationModel'
 import { RVOModel } from './models/RVOModel'
@@ -22,7 +22,7 @@ const MODEL_METADATA: Record<SimulationModelKey, SimulationMetadata> = {
         id: 'desiredSpeed',
         label: 'Желаемая скорость',
         min: 0.5,
-        max: 3,
+        max: 4,
         step: 0.1,
         defaultValue: 1.5,
         unit: 'м/с',
@@ -48,7 +48,7 @@ const MODEL_METADATA: Record<SimulationModelKey, SimulationMetadata> = {
         id: 'agentCount',
         label: 'Количество агентов',
         min: 10,
-        max: 80,
+        max: 200,
         step: 2,
         defaultValue: 40,
         unit: 'чел',
@@ -135,10 +135,7 @@ function App() {
     () => ({
       sfm: new SocialForceModel(DEFAULT_PARAMETER_STATE.sfm),
       rvo: new RVOModel(DEFAULT_PARAMETER_STATE.rvo),
-      cellular: new PlaceholderSimulation(
-        'cellular',
-        DEFAULT_PARAMETER_STATE.cellular,
-      ),
+      cellular: new CAModel(DEFAULT_PARAMETER_STATE.cellular),
     }),
     [],
   )
