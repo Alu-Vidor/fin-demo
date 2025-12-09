@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { SimulationCanvas } from './components/SimulationCanvas'
 import { PlaceholderSimulation } from './models/PlaceholderSimulation'
@@ -111,27 +111,29 @@ const buildDefaultParameters = (): ParameterState =>
     return acc
   }, {} as ParameterState)
 
+const DEFAULT_PARAMETER_STATE = buildDefaultParameters()
+
 function App() {
   const [selectedModel, setSelectedModel] =
     useState<SimulationModelKey>('sfm')
   const [running, setRunning] = useState(false)
   const [parameterState, setParameterState] = useState<ParameterState>(
-    () => buildDefaultParameters(),
+    () => DEFAULT_PARAMETER_STATE,
   )
 
-  const modelsRef = useRef<Record<SimulationModelKey, SimulationModel> | null>(
-    null,
+  const models = useMemo<Record<SimulationModelKey, SimulationModel>>(
+    () => ({
+      sfm: new SocialForceModel(DEFAULT_PARAMETER_STATE.sfm),
+      rvo: new PlaceholderSimulation('rvo', DEFAULT_PARAMETER_STATE.rvo),
+      cellular: new PlaceholderSimulation(
+        'cellular',
+        DEFAULT_PARAMETER_STATE.cellular,
+      ),
+    }),
+    [],
   )
 
-  if (!modelsRef.current) {
-    modelsRef.current = {
-      sfm: new SocialForceModel(parameterState.sfm),
-      rvo: new PlaceholderSimulation('rvo', parameterState.rvo),
-      cellular: new PlaceholderSimulation('cellular', parameterState.cellular),
-    }
-  }
-
-  const activeModel = modelsRef.current[selectedModel]
+  const activeModel = models[selectedModel]
   const activeParameters = parameterState[selectedModel]
   const metadata = MODEL_METADATA[selectedModel]
 

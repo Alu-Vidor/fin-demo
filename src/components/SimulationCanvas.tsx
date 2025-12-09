@@ -49,7 +49,7 @@ export function SimulationCanvas({ model, running }: SimulationCanvasProps) {
   }, [model, drawFrame])
 
   const step = useCallback(
-    (timestamp: number) => {
+    function stepFrame(timestamp: number) {
       if (!ctxRef.current || !canvasRef.current || !model) {
         return
       }
@@ -61,7 +61,7 @@ export function SimulationCanvas({ model, running }: SimulationCanvasProps) {
 
       model.update(deltaMs / 1000)
       drawFrame()
-      animationRef.current = window.requestAnimationFrame(step)
+      animationRef.current = window.requestAnimationFrame(stepFrame)
     },
     [model, drawFrame],
   )

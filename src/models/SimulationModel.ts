@@ -32,7 +32,9 @@ export abstract class SimulationModel {
     // Optional hook for subclasses.
   }
 
-  protected onResize(_width: number, _height: number): void {
+  protected onResize(width: number, height: number): void {
+    void width
+    void height
     // Optional hook for subclasses.
   }
 }

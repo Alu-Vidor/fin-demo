@@ -149,7 +149,9 @@ export class SocialForceModel extends SimulationModel {
     this.createWallCrossingScenario()
   }
 
-  protected override onResize(_width: number, _height: number): void {
+  protected override onResize(width: number, height: number): void {
+    void width
+    void height
     this.createWallCrossingScenario()
   }
 
