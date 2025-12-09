@@ -4,6 +4,7 @@ import { SimulationCanvas } from './components/SimulationCanvas'
 import { PlaceholderSimulation } from './models/PlaceholderSimulation'
 import { SocialForceModel } from './models/SocialForceModel'
 import type { SimulationModel } from './models/SimulationModel'
+import { RVOModel } from './models/RVOModel'
 import type {
   SimulationMetadata,
   SimulationModelKey,
@@ -19,29 +20,38 @@ const MODEL_METADATA: Record<SimulationModelKey, SimulationMetadata> = {
     parameters: [
       {
         id: 'desiredSpeed',
-        label: 'Desired Speed',
+        label: 'Желаемая скорость',
         min: 0.5,
         max: 3,
         step: 0.1,
         defaultValue: 1.5,
-        unit: 'm/s',
+        unit: 'м/с',
       },
       {
         id: 'relaxationTime',
-        label: 'Relaxation Time',
+        label: 'Время релаксации',
         min: 0.1,
         max: 2,
         step: 0.05,
         defaultValue: 0.6,
-        unit: 's',
+        unit: 'с',
       },
       {
         id: 'repulsionStrengthA',
-        label: 'Repulsion Strength A',
+        label: 'Сила отталкивания A',
         min: 1,
         max: 10,
         step: 0.5,
         defaultValue: 5,
+      },
+      {
+        id: 'agentCount',
+        label: 'Количество агентов',
+        min: 10,
+        max: 80,
+        step: 2,
+        defaultValue: 40,
+        unit: 'чел',
       },
     ],
   },
@@ -52,21 +62,21 @@ const MODEL_METADATA: Record<SimulationModelKey, SimulationMetadata> = {
     parameters: [
       {
         id: 'neighborRadius',
-        label: 'Neighbor Radius',
+        label: 'Радиус соседей',
         min: 1,
         max: 10,
         step: 0.5,
         defaultValue: 4,
-        unit: 'm',
+        unit: 'м',
       },
       {
         id: 'timeHorizon',
-        label: 'Time Horizon',
+        label: 'Горизонт планирования',
         min: 0.5,
         max: 6,
         step: 0.1,
         defaultValue: 2.5,
-        unit: 's',
+        unit: 'с',
       },
     ],
   },
@@ -77,16 +87,16 @@ const MODEL_METADATA: Record<SimulationModelKey, SimulationMetadata> = {
     parameters: [
       {
         id: 'cellSize',
-        label: 'Cell Size',
+        label: 'Размер ячейки',
         min: 10,
         max: 60,
         step: 2,
         defaultValue: 24,
-        unit: 'px',
+        unit: 'пкс',
       },
       {
         id: 'updateRate',
-        label: 'Update Rate',
+        label: 'Частота обновления',
         min: 0.25,
         max: 4,
         step: 0.25,
@@ -124,7 +134,7 @@ function App() {
   const models = useMemo<Record<SimulationModelKey, SimulationModel>>(
     () => ({
       sfm: new SocialForceModel(DEFAULT_PARAMETER_STATE.sfm),
-      rvo: new PlaceholderSimulation('rvo', DEFAULT_PARAMETER_STATE.rvo),
+      rvo: new RVOModel(DEFAULT_PARAMETER_STATE.rvo),
       cellular: new PlaceholderSimulation(
         'cellular',
         DEFAULT_PARAMETER_STATE.cellular,

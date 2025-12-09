@@ -20,6 +20,7 @@ const DEFAULT_PARAMS = {
   desiredSpeed: 1.5,
   relaxationTime: 0.6,
   repulsionStrengthA: 5,
+  agentCount: 40,
 }
 
 /**
@@ -30,12 +31,12 @@ const DEFAULT_PARAMS = {
 export class SocialForceModel extends SimulationModel {
   private agents: SocialForceAgent[] = []
   private readonly pixelsPerMeter = 45
-  private readonly agentsPerGroup = 20
   private readonly personalSpace: number
   private readonly bodyStiffness = 2200
   private readonly maxSpeed: number
   private readonly walkwayPadding = 80
   private readonly spawnMargin = 120
+  private lastAgentCount = DEFAULT_PARAMS.agentCount
 
   constructor(initialParams: SimulationParameterValues) {
     super(initialParams)
@@ -156,20 +157,29 @@ export class SocialForceModel extends SimulationModel {
   }
 
   protected override onParamsUpdate(): void {
-    // Parameters are sampled directly during integration, so nothing to do here yet.
+    const desiredCount = this.getConfiguredAgentTotal()
+    if (desiredCount !== this.lastAgentCount) {
+      this.createWallCrossingScenario()
+      return
+    }
+    // Other parameters are sampled directly during integration.
   }
 
   private createWallCrossingScenario() {
+    const desiredTotal = this.getConfiguredAgentTotal()
+    this.lastAgentCount = desiredTotal
     if (this.width === 0 || this.height === 0) {
       this.agents = []
       return
     }
+    const leftCount = Math.ceil(desiredTotal / 2)
+    const rightCount = Math.floor(desiredTotal / 2)
 
     const agents: SocialForceAgent[] = []
-    for (let i = 0; i < this.agentsPerGroup; i += 1) {
+    for (let i = 0; i < leftCount; i += 1) {
       agents.push(this.spawnAgent('left', `L-${i}`))
     }
-    for (let i = 0; i < this.agentsPerGroup; i += 1) {
+    for (let i = 0; i < rightCount; i += 1) {
       agents.push(this.spawnAgent('right', `R-${i}`))
     }
     this.agents = agents
@@ -223,5 +233,10 @@ export class SocialForceModel extends SimulationModel {
     return {
       ...this.spawnAgent(agent.group, agent.id),
     }
+  }
+
+  private getConfiguredAgentTotal(): number {
+    const raw = this.params.agentCount ?? DEFAULT_PARAMS.agentCount
+    return Math.max(2, Math.round(raw))
   }
 }
